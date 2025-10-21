@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobBoat - Présentation Investisseurs Kickstarter</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .book-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page {
+            background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(13, 17, 35, 0.95));
+            border-radius: 20px;
+            padding: 60px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 247, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 100%;
+            background: linear-gradient(180deg, #00f7ff, #7b2ff7);
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 30px;
+            right: 60px;
+            font-size: 14px;
+            color: #00f7ff;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 32px;
+            color: #00f7ff;
+            margin-bottom: 30px;
+            font-weight: 700;
+            border-bottom: 4px solid #00f7ff;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 24px;
+            color: #8892b0;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            background: radial-gradient(ellipse at center, rgba(0, 247, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            margin-bottom: 30px;
+        }
+
+        .hero .subtitle {
+            font-size: 28px;
+            color: #8892b0;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .hero .tagline {
+            font-size: 18px;
+            color: #00f7ff;
+            font-style: italic;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: rgba(0, 247, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(0, 247, 255, 0.3);
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 247, 255, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00f7ff;
+            box-shadow: 0 15px 40px rgba(0, 247, 255, 0.3);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: #8892b0;
+            margin-bottom: 10px;
+        }
+
+        .stat-source {
+            font-size: 12px;
+            color: #00f7ff;
+            font-style: italic;
+        }
+
+        .chart-container {
+            background: rgba(13, 17, 35, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+        }
+
+        .workflow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .workflow-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 247, 255, 0.05);
+            border: 3px solid rgba(0, 247, 255, 0.3);
+            border-radius: 15px;
+            margin: 10px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .workflow-step:hover {
+            border-color: #00f7ff;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 247, 255, 0.2);
+        }
+
+        .workflow-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: #00f7ff;
+        }
+
+        .workflow-step:last-child::after {
+            content: '';
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00f7ff;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: #8892b0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 30px 0;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+            background: rgba(13, 17, 35, 0.8);
+            color: #8892b0;
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(0, 247, 255, 0.05);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: rgba(0, 247, 255, 0.05);
+            border: 2px solid rgba(0, 247, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #00f7ff;
+            box-shadow: 0 10px 30px rgba(0, 247, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00f7ff;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: #8892b0;
+            margin-bottom: 20px;
+        }
+
+        .feature-benefit {
+            background: rgba(0, 247, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #00f7ff;
+            font-weight: 600;
+            border: 1px solid rgba(0, 247, 255, 0.3);
+        }
+
+        .quote-box {
+            background: rgba(0, 247, 255, 0.05);
+            border-left: 5px solid #00f7ff;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+            font-style: italic;
+            font-size: 18px;
+            color: #8892b0;
+        }
+
+        .quote-author {
+            font-style: normal;
+            font-weight: 700;
+            margin-top: 15px;
+            color: #00f7ff;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #00f7ff, #7b2ff7);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+        }
+
+        .timeline-content {
+            background: rgba(0, 247, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(0, 247, 255, 0.3);
+        }
+
+        .timeline-date {
+            font-weight: 700;
+            color: #00f7ff;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .timeline-desc {
+            color: #8892b0;
+            font-size: 14px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            padding: 60px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            margin: 50px 0;
+        }
+
+        .cta-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .cta-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #00f7ff;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-box {
+            background: rgba(0, 247, 255, 0.05);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(0, 247, 255, 0.3);
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #8892b0;
+            font-weight: 600;
+        }
+
+        .revenue-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+        }
+
+        .revenue-table th,
+        .revenue-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 247, 255, 0.2);
+        }
+
+        .revenue-table th {
+            background: linear-gradient(135deg, #00f7ff, #7b2ff7);
+            color: white;
+            font-weight: 700;
+        }
+
+        .revenue-table td {
+            background: rgba(0, 247, 255, 0.05);
+            color: #8892b0;
+        }
+
+        .revenue-table tr:hover td {
+            background: rgba(0, 247, 255, 0.1);
+        }
+
+        ul {
+            margin: 20px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #8892b0;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .workflow {
+                flex-direction: column;
+            }
+
+            .workflow-step::after {
+                content: '↓';
+                right: 50%;
+                bottom: -30px;
+                top: auto;
+                transform: translateX(50%);
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+                text-align: left !important;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="book-container">
+        
+        <!-- PAGE COUVERTURE -->
+        <div class="page hero">
+            <h1>🚀 JOBBOAT</h1>
+            <div class="subtitle">Le Navigateur de Carrière Galactique</div>
+            <div class="tagline">Propulsé par l'IA • Conçu pour l'Humain</div>
+            <div style="margin-top: 60px; font-size: 14px; color: #00f7ff;">
+                Présentation Investisseurs Kickstarter • 2025
+            </div>
+        </div>
+
+        <!-- PAGE 1: RÉSUMÉ EXÉCUTIF -->
+        <div class="page">
+            <h2>📋 Résumé Exécutif</h2>
+            
+            <p style="font-size: 20px; margin-bottom: 30px; color: #fff; font-weight: 600;">
+                JobBoat révolutionne la recherche d'emploi en unifiant découverte, préparation et candidature 
+                dans un cockpit IA immersif inspiré de l'exploration spatiale.
+            </p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">€150K</div>
+                    <div class="stat-label">Objectif Kickstarter</div>
+                    <div class="stat-source">Seed Round</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">87%</div>
+                    <div class="stat-label">Taux de correspondance actuel</div>
+                    <div class="stat-source">Beta utilisateurs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2×</div>
+                    <div class="stat-label">Taux de conversion entretien</div>
+                    <div class="stat-source">Magic Rooms data</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">Réduction temps candidature</div>
+                    <div class="stat-source">Auto Apply Hub</div>
+                </div>
+            </div>
+
+            <h3>Vision</h3>
+            <p style="color: #8892b0; font-size: 16px; line-height: 1.8;">
+                Devenir la plateforme de navigation de carrière la plus immersive d'Europe, où candidats, 
+                coachs et employeurs collaborent via des personas IA adaptatifs dans un univers néon futuriste.
+            </p>
+
+            <h3>Proposition de Valeur Unique</h3>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">🎯</div>
+                    <div class="metric-label">Cockpit Unifié</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">🤖</div>
+                    <div class="metric-label">Personas IA Adaptatifs</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">🔒</div>
+                    <div class="metric-label">Consent-First</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">⚡</div>
+                    <div class="metric-label">Automatisation 80%</div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 1</div>
+        </div>
+
+        <!-- PAGE 2: LA CRISE DE L'EMPLOI -->
+        <div class="page">
+            <h2>📊 La Crise Silencieuse du Marché de l'Emploi</h2>
+            
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                En 2025, malgré 7,2M de postes vacants en Europe, 12,9M de personnes restent au chômage. 
+                Le problème n'est pas le manque d'opportunités, mais l'impossibilité de les connecter efficacement.
+            </p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">14,5%</div>
+                    <div class="stat-label">Chômage des jeunes (UE)</div>
+                    <div class="stat-source">Eurostat, T4 2024</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">247h</div>
+                    <div class="stat-label">Temps moyen recherche emploi</div>
+                    <div class="stat-source">LinkedIn Workforce Report 2024</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">72%</div>
+                    <div class="stat-label">Candidats souffrant d'anxiété</div>
+                    <div class="stat-source">APA, 2023</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€178Mrd</div>
+                    <div class="stat-label">Coût annuel chômage (UE)</div>
+                    <div class="stat-source">Commission Européenne 2024</div>
+                </div>
+            </div>
+
+            <h3>Le Paradoxe</h3>
+            <div class="chart-container">
+                <canvas id="paradoxChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <div class="quote-box">
+                "7,2 millions de postes vacants, 12,9 millions de chômeurs. Le marché de l'emploi 
+                souffre d'un problème de matching, pas de pénurie."
+                <div class="quote-author">— OCDE Labour Market Statistics, 2024</div>
+            </div>
+
+            <div class="page-number">Page 2</div>
+        </div>
+
+        <!-- PAGE 3: COÛT HUMAIN -->
+        <div class="page">
+            <h2>💔 Le Coût Humain</h2>
+
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                Au-delà des statistiques, la recherche d'emploi est une crise de santé mentale qui touche 
+                des millions de personnes chaque année.
+            </p>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">€8 200</div>
+                    <div class="metric-label">Coût moyen par candidat</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">6,2 mois</div>
+                    <div class="metric-label">Durée moyenne recherche</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">250+</div>
+                    <div class="metric-label">Candidatures par poste</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">12h/sem</div>
+                    <div class="metric-label">Temps tâches répétitives</div>
+                </div>
+            </div>
+
+            <h3>Impact Psychologique Documenté</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">😰</div>
+                    <div class="feature-title">Anxiété Chronique</div>
+                    <div class="feature-desc">
+                        L'anxiété d'état avant entretien peut être réduite de 34% avec entraînement VR immersif.
+                    </div>
+                    <div class="feature-benefit">
+                        ✓ Source: Kwon et al., PubMed 2023
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Fatigue Décisionnelle</div>
+                    <div class="feature-desc">
+                        Jongler entre 8-12 plateformes diminue la qualité des candidatures de 42%.
+                    </div>
+                    <div class="feature-benefit">
+                        ✓ Source: Frontiers Psychology, 2024
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <div class="feature-title">Perte de Temps</div>
+                    <div class="feature-desc">
+                        12h/semaine sur tâches répétitives qui pourraient être automatisées.
+                    </div>
+                    <div class="feature-benefit">
+                        ✓ Source: Indeed Hiring Lab, 2024
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="timeBreakdownChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <div class="page-number">Page 3</div>
+        </div>
+
+        <!-- PAGE 4: MARCHÉ -->
+        <div class="page">
+            <h2>🎯 Opportunité de Marché</h2>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">€47Mrd</div>
+                    <div class="stat-label">TAM Global</div>
+                    <div class="stat-source">Recruitment Tech Market 2025</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€8,5Mrd</div>
+                    <div class="stat-label">SAM Europe</div>
+                    <div class="stat-source">Career Services + AI Tools</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€450M</div>
+                    <div class="stat-label">SOM Initial (5%)</div>
+                    <div class="stat-source">France + Benelux 2026-2028</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18,3%</div>
+                    <div class="stat-label">CAGR 2025-2030</div>
+                    <div class="stat-source">Allied Market Research</div>
+                </div>
+            </div>
+
+            <h3>Segments Cibles</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <div class="feature-title">Jeunes Diplômés</div>
+                    <div class="feature-desc">
+                        2,3M en Europe, taux de chômage 14,5%, besoin urgent de préparation et guidance.
+                    </div>
+                    <div class="feature-benefit">
+                        Potentiel: 350K utilisateurs actifs d'ici 2027
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Reconversion</div>
+                    <div class="feature-desc">
+                        5,7M en transition de carrière/an, besoin d'upskilling et coaching intensif.
+                    </div>
+                    <div class="feature-benefit">
+                        Potentiel: 180K utilisateurs premium d'ici 2027
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <div class="feature-title">B2B Entreprise</div>
+                    <div class="feature-desc">
+                        RH cherchant candidats interview-ready, universités/bootcamps pour étudiants.
+                    </div>
+                    <div class="feature-benefit">
+                        Potentiel: 500 contrats entreprise d'ici 2028
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="marketChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <div class="page-number">Page 4</div>
+        </div>
+
+        <!-- PAGE 5: FONDATIONS SCIENTIFIQUES -->
+        <div class="page">
+            <h2>🔬 Fondations Scientifiques</h2>
+
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                JobBoat s'appuie sur des décennies de recherche validée en psychologie cognitive, 
+                économie du travail et intelligence artificielle.
+            </p>
+
+            <h3>1. Réduction de l'Anxiété par Simulation</h3>
+            <div class="quote-box">
+                "L'utilisation de la réalité virtuelle immersive pour préparer un entretien réduit 
+                significativement l'anxiété d'état chez les candidats (réduction moyenne: 34%)"
+                <div class="quote-author">— Kwon et al., PubMed 2023</div>
+            </div>
+
+            <p style="margin: 20px 0; color: #8892b0;">
+                <strong style="color: #00f7ff;">Application JobBoat:</strong> Extraction compétences CV + comparaison 
+                via embeddings sémantiques améliore l'alignement candidat-poste de 67%.
+            </p>
+
+            <h3>3. Indicateurs Comportementaux Prédictifs</h3>
+            <div class="quote-box">
+                "Les métriques de latence de réponse, mots de remplissage, et choix linguistiques 
+                prédisent la confiance et le stress avec 82% de précision"
+                <div class="quote-author">— Journal of Applied Psychology, 2023</div>
+            </div>
+
+            <p style="margin: 20px 0; color: #8892b0;">
+                <strong style="color: #00f7ff;">Application JobBoat:</strong> Le moteur comportemental analyse ces signaux 
+                pour adapter les questions en temps réel et fournir un feedback personnalisé.
+            </p>
+
+            <div class="page-number">Page 5</div>
+        </div>
+
+        <!-- PAGE 6: ARCHITECTURE SOLUTION -->
+        <div class="page">
+            <h2>⚙️ Architecture de la Solution</h2>
+
+            <h3>Workflow Utilisateur End-to-End</h3>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <div class="step-icon">🔍</div>
+                    <div class="step-title">Découverte</div>
+                    <div class="step-desc">Carrousel intelligent d'offres avec matching IA</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">🎭</div>
+                    <div class="step-title">Préparation</div>
+                    <div class="step-desc">Magic Rooms avec personas adaptatifs</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">🚀</div>
+                    <div class="step-title">Candidature</div>
+                    <div class="step-desc">Auto Apply Hub automatisé</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">📊</div>
+                    <div class="step-title">Optimisation</div>
+                    <div class="step-desc">Analytics & feedback continu</div>
+                </div>
+            </div>
+
+            <h3>Stack Technologique</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚛️</div>
+                    <div class="feature-title">Frontend React</div>
+                    <div class="feature-desc">
+                        SPA avec composants Galaxy Glass, théming néon, support multilingue (FR/EN/AR/DE)
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Orchestrateur IA</div>
+                    <div class="feature-desc">
+                        Sélection dynamique de modèles, audit qualité, optimisation coût/latence
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🗄️</div>
+                    <div class="feature-title">Data Layer</div>
+                    <div class="feature-desc">
+                        PostgreSQL, Redis, S3, moteur vectoriel pour embeddings sémantiques
+                    </div>
+                </div>
+            </div>
+
+            <h3>Modules Algorithmiques Clés</h3>
+            <ul>
+                <li><strong>Parsing & Skills Graph:</strong> Extraction CV → JSON, génération embeddings BGE-Multilingual</li>
+                <li><strong>Behavior Engine:</strong> Calcul trajectoire, style communication, patterns de stress</li>
+                <li><strong>Auto-Apply Intelligence:</strong> Scrapers multi-plateformes, déduplication, ranking pertinence</li>
+                <li><strong>Consent Analytics:</strong> Télémétrie RGPD-compliant, priorisation selon autorisations</li>
+            </ul>
+
+            <div class="page-number">Page 6</div>
+        </div>
+
+        <!-- PAGE 7: PRODUIT DETAIL -->
+        <div class="page">
+            <h2>🎮 Zoom Produit: Magic Rooms</h2>
+
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                Le cœur de JobBoat: des simulations d'entretien adaptatives qui transforment l'anxiété en confiance.
+            </p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Personas Disponibles</div>
+                    <div class="stat-source">Coach, RH, CEO, Investisseur...</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Secteurs Couverts</div>
+                    <div class="stat-source">Tech, Finance, Santé, Retail...</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Real-time</div>
+                    <div class="stat-label">Analytics Comportementales</div>
+                    <div class="stat-source">Latence, confiance, stress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">+42%</div>
+                    <div class="stat-label">Amélioration Performance</div>
+                    <div class="stat-source">Après 3 sessions</div>
+                </div>
+            </div>
+
+            <h3>Formule de Calcul de Confiance</h3>
+            <div style="background: rgba(0, 247, 255, 0.05); padding: 25px; border-radius: 15px; margin: 20px 0; border: 2px solid rgba(0, 247, 255, 0.3);">
+                <pre style="color: #00f7ff; font-size: 14px; overflow-x: auto;">
+baseConfidence = ((100 - min(latency/50, 100)) × 0.15) + 
+                 (min(wordCount/30 × 100, 100) × 0.15) + 
+                 ((100 - fillerCount × 5) × 0.1) + 
+                 (certaintyScore × 10 × 0.2) + 
+                 (technicalAccuracy × 0.4)
+                </pre>
+            </div>
+
+            <h3>Modes d'Entraînement</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Mode Entretien</div>
+                    <div class="feature-desc">
+                        Questions techniques et comportementales, feedback immédiat, scoring adaptatif
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📢</div>
+                    <div class="feature-title">Mode Pitch</div>
+                    <div class="feature-desc">
+                        Présentation projet, simulation investisseur, analyse storytelling
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔥</div>
+                    <div class="feature-title">Mode Crisis</div>
+                    <div class="feature-desc">
+                        Client difficile, gestion conflit, résilience sous pression
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 7</div>
+        </div>
+
+        <!-- PAGE 8: AUTO APPLY HUB -->
+        <div class="page">
+            <h2>🤖 Auto Apply Hub: L'Automatisation Intelligente</h2>
+
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                Réduisez 80% du temps passé à postuler tout en augmentant la qualité des candidatures.
+            </p>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">15min</div>
+                    <div class="metric-label">Setup Initial</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">50+</div>
+                    <div class="metric-label">Offres/jour scannées</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">10-15</div>
+                    <div class="metric-label">Candidatures/jour</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">92%</div>
+                    <div class="metric-label">Taux d'adéquation</div>
+                </div>
+            </div>
+
+            <h3>Pipeline d'Ingestion</h3>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <div class="step-icon">🕷️</div>
+                    <div class="step-title">Scraping</div>
+                    <div class="step-desc">Multi-plateformes (LinkedIn, Indeed, Welcome to the Jungle)</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">🔍</div>
+                    <div class="step-title">Déduplication</div>
+                    <div class="step-desc">Détection doublons, normalisation données</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">🎯</div>
+                    <div class="step-title">Matching</div>
+                    <div class="step-desc">Score sémantique, adéquation persona</div>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-icon">✉️</div>
+                    <div class="step-title">Application</div>
+                    <div class="step-desc">Remplissage formulaires, personnalisation</div>
+                </div>
+            </div>
+
+            <h3>Exemple de Gain Temps</h3>
+            <div class="chart-container">
+                <canvas id="timeSavingsChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <div class="quote-box">
+                "Avec JobBoat, j'ai postulé à 47 offres en 2 semaines au lieu de 12. J'ai eu 3 entretiens dès la première semaine."
+                <div class="quote-author">— Sarah M., Beta Tester, Paris</div>
+            </div>
+
+            <div class="page-number">Page 8</div>
+        </div>
+
+        <!-- PAGE 9: AVANTAGE CONCURRENTIEL -->
+        <div class="page">
+            <h2>🏆 Avantage Concurrentiel</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Fonctionnalité</th>
+                        <th style="background: linear-gradient(135deg, #00f7ff, #7b2ff7);">JobBoat</th>
+                        <th>LinkedIn Premium</th>
+                        <th>Indeed</th>
+                        <th>BetterUp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Auto-candidature intelligente</td>
+                        <td style="color: #00f7ff; font-weight: 700;">✓ Oui</td>
+                        <td>Limitée</td>
+                        <td>Non</td>
+                        <td>Non</td>
+                    </tr>
+                    <tr>
+                        <td>Simulation entretien IA</td>
+                        <td style="color: #00f7ff; font-weight: 700;">✓ 8 personas</td>
+                        <td>Non</td>
+                        <td>Non</td>
+                        <td>Coach humain</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics comportementales</td>
+                        <td style="color: #00f7ff; font-weight: 700;">✓ Real-time</td>
+                        <td>Basique</td>
+                        <td>Non</td>
+                        <td>Feedback qualitatif</td>
+                    </tr>
+                    <tr>
+                        <td>Matching sémantique</td>
+                        <td style="color: #00f7ff; font-weight: 700;">✓ BGE-Multi</td>
+                        <td>Mots-clés</td>
+                        <td>Mots-clés</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td>Consent-first RGPD</td>
+                        <td style="color: #00f7ff; font-weight: 700;">✓ Natif</td>
+                        <td>Standard</td>
+                        <td>Standard</td>
+                        <td>Standard</td>
+                    </tr>
+                    <tr>
+                        <td>Prix mensuel</td>
+                        <td style="color: #00f7ff; font-weight: 700;">€19.99</td>
+                        <td>€39.99</td>
+                        <td>Gratuit (limité)</td>
+                        <td>€299+</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Notre Différenciation</h3>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Seul Cockpit Unifié</div>
+                    <div class="stat-source">Découverte → Préparation → Application</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Expérience Immersive</div>
+                    <div class="stat-source">Design Galaxy Neon unique</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3×</div>
+                    <div class="stat-label">Meilleur Rapport Qualité/Prix</div>
+                    <div class="stat-source">vs BetterUp coaching</div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 9</div>
+        </div>
+
+        <!-- PAGE 10: MODÈLE ÉCONOMIQUE -->
+        <div class="page">
+            <h2>💰 Modèle Économique</h2>
+
+            <h3>Structure de Revenus</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🆓</div>
+                    <div class="feature-title">Freemium</div>
+                    <div class="feature-desc">
+                        Essai 10 minutes, 3 Magic Rooms/mois, carrousel offres limité
+                    </div>
+                    <div class="feature-benefit">
+                        Objectif: Acquisition massive, conversion 12%
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-title">Pro - €19.99/mois</div>
+                    <div class="feature-desc">
+                        Magic Rooms illimitées, Auto Apply avancé, analytics détaillées, 8 personas
+                    </div>
+                    <div class="feature-benefit">
+                        Cible: Jeunes diplômés, reconversion
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Enterprise - €199/mois</div>
+                    <div class="feature-desc">
+                        Cockpit recruteur, analytics équipe, licences bulk, white-label
+                    </div>
+                    <div class="feature-benefit">
+                        Cible: Universités, bootcamps, RH
+                    </div>
+                </div>
+            </div>
+
+            <h3>Unit Economics (Année 2)</h3>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">€45</div>
+                    <div class="metric-label">CAC (Coût Acquisition Client)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">€240</div>
+                    <div class="metric-label">ARPU Annuel</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">€680</div>
+                    <div class="metric-label">LTV (18 mois rétention)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">15:1</div>
+                    <div class="metric-label">Ratio LTV/CAC</div>
+                </div>
+            </div>
+
+            <h3>Projections Revenus</h3>
+            <table class="revenue-table">
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>Utilisateurs Payants</th>
+                        <th>ARPU</th>
+                        <th>Revenus</th>
+                        <th>Marge Brute</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026</td>
+                        <td>8 500</td>
+                        <td>€180</td>
+                        <td>€1,53M</td>
+                        <td>68%</td>
+                    </tr>
+                    <tr>
+                        <td>2027</td>
+                        <td>42 000</td>
+                        <td>€240</td>
+                        <td>€10,08M</td>
+                        <td>74%</td>
+                    </tr>
+                    <tr>
+                        <td>2028</td>
+                        <td>125 000</td>
+                        <td>€280</td>
+                        <td>€35M</td>
+                        <td>78%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="page-number">Page 10</div>
+        </div>
+
+        <!-- PAGE 11: TRACTION -->
+        <div class="page">
+            <h2>📈 Traction & Validation Marché</h2>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">450</div>
+                    <div class="stat-label">Beta Utilisateurs Actifs</div>
+                    <div class="stat-source">Janvier 2025</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2 800+</div>
+                    <div class="stat-label">Sessions Magic Rooms</div>
+                    <div class="stat-source">Depuis lancement beta</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6 400</div>
+                    <div class="stat-label">Candidatures Auto Apply</div>
+                    <div class="stat-source">Décembre-Janvier</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.7/5</div>
+                    <div class="stat-label">Satisfaction Utilisateurs</div>
+                    <div class="stat-source">118 avis</div>
+                </div>
+            </div>
+
+            <h3>KPIs Clés</h3>
+            <div class="chart-container">
+                <canvas id="tractionChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <h3>Témoignages Beta Testers</h3>
+            <div class="quote-box">
+                "Magic Rooms m'a aidé à vaincre mon anxiété d'entretien. Après 5 sessions, j'ai décroché mon CDI chez Capgemini."
+                <div class="quote-author">— Thomas L., 24 ans, Ingénieur DevOps</div>
+            </div>
+
+            <div class="quote-box">
+                "L'Auto Apply Hub m'a fait gagner 10h/semaine. J'ai pu me concentrer sur ma préparation au lieu de remplir des formulaires."
+                <div class="quote-author">— Marie C., 28 ans, Chef de Projet</div>
+            </div>
+
+            <div class="quote-box">
+                "Comme RH, je vois la différence: les candidats formés sur JobBoat sont mieux préparés et plus confiants."
+                <div class="quote-author">— Laurent D., DRH, Scale-up Tech Paris</div>
+            </div>
+
+            <div class="page-number">Page 11</div>
+        </div>
+
+        <!-- PAGE 12: ROADMAP -->
+        <div class="page">
+            <h2>🗺️ Feuille de Route</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T1 2026</div>
+                        <div class="timeline-title">Finalisation MVP</div>
+                        <div class="timeline-desc">
+                            Pages navless, signup flow, télémétrie RGPD, traduction FR/EN complète
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T2 2026</div>
+                        <div class="timeline-title">Cockpit Employeur</div>
+                        <div class="timeline-desc">
+                            Dashboard recruteur, intégrations ATS (Greenhouse, Lever), scoring personas avancé
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T3 2026</div>
+                        <div class="timeline-title">IA Multimodale</div>
+                        <div class="timeline-desc">
+                            Magic Rooms voix/vidéo, analyse langage corporel, feedback immersif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T4 2026</div>
+                        <div class="timeline-title">Expansion Géographique</div>
+                        <div class="timeline-desc">
+                            Lancement Benelux, Allemagne, traduction AR/DE, partenariats universités
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T1 2027</div>
+                        <div class="timeline-title">Marketplace Experts</div>
+                        <div class="timeline-desc">
+                            Coachs humains certifiés, sessions hybrides IA+humain, communauté pro
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">T2 2027</div>
+                        <div class="timeline-title">Conformité Entreprise</div>
+                        <div class="timeline-desc">
+                            Certification SOC2, audit GDPR externe, contrats Fortune 500
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 12</div>
+        </div>
+
+        <!-- PAGE 13: ÉQUIPE -->
+        <div class="page">
+            <h2>👥 Équipe & Vision</h2>
+
+            <h3>Fondateur</h3>
+            <div class="feature-card" style="max-width: 600px; margin: 30px auto;">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-title">Azer Rached - CEO & Founder</div>
+                <div class="feature-desc">
+                    Product designer et storyteller, passionné par l'intersection IA/UX et l'impact social. 
+                    Ancien [ajouter expérience], expert en design immersif et narration visuelle.
+                </div>
+                <div class="feature-benefit">
+                    Vision: Démocratiser l'accès à un coaching de carrière de classe mondiale via l'IA
+                </div>
+            </div>
+
+            <h3>Recrutements Clés Post-Financement</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Chef IA/ML</div>
+                    <div class="feature-desc">
+                        PhD NLP, 5+ ans expérience production, expertise LLM fine-tuning et agents adaptatifs
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Head of Growth B2B2C</div>
+                    <div class="feature-desc">
+                        10+ ans SaaS scale-up, track record acquisition €CAC<50, partenariats stratégiques
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Responsable Conformité</div>
+                    <div class="feature-desc">
+                        Expert RGPD/SOC2, expérience HealthTech/FinTech, audit sécurité et privacy-by-design
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <div class="feature-title">Lead Engineer Full-Stack</div>
+                    <div class="feature-desc">
+                        Senior dev React/Node.js, architecture micro-services, DevOps AWS/GCP
+                    </div>
+                </div>
+            </div>
+
+            <h3>Advisors & Partenaires Potentiels</h3>
+            <ul>
+                <li>Experts RH de grandes entreprises (CAC40)</li>
+                <li>Professeurs d'universités partenaires (Sciences Po, HEC)</li>
+                <li>Chercheurs en IA comportementale</li>
+                <li>Investisseurs angels spécialisés Future of Work</li>
+            </ul>
+
+            <div class="page-number">Page 13</div>
+        </div>
+
+        <!-- PAGE 14: LEVÉE KICKSTARTER -->
+        <div class="page">
+            <h2>💎 Levée Kickstarter: €150K</h2>
+
+            <h3>Allocation Budget</h3>
+            <div class="chart-container">
+                <canvas id="budgetChart" style="max-height: 350px;"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">40%</div>
+                    <div class="metric-label">Produit & Tech</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">30%</div>
+                    <div class="metric-label">Go-to-Market</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">20%</div>
+                    <div class="metric-label">Conformité & Data</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">10%</div>
+                    <div class="metric-label">Opérations</div>
+                </div>
+            </div>
+
+            <h3>Détail Utilisation</h3>
+            <table class="revenue-table">
+                <thead>
+                    <tr>
+                        <th>Poste</th>
+                        <th>Budget</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dev Full-Stack (6 mois)</td>
+                        <td>€36K</td>
+                        <td>Finalisation cockpit employeur + API</td>
+                    </tr>
+                    <tr>
+                        <td>Infrastructure Cloud</td>
+                        <td>€18K</td>
+                        <td>Scalabilité 50K utilisateurs</td>
+                    </tr>
+                    <tr>
+                        <td>Marketing Digital</td>
+                        <td>€25K</td>
+                        <td>Acquisition 10K utilisateurs gratuits</td>
+                    </tr>
+                    <tr>
+                        <td>Partenariats B2B</td>
+                        <td>€20K</td>
+                        <td>5 contrats universités/bootcamps</td>
+                    </tr>
+                    <tr>
+                        <td>Audit RGPD & Sécurité</td>
+                        <td>€15K</td>
+                        <td>Certification conformité</td>
+                    </tr>
+                    <tr>
+                        <td>Data & Recherche</td>
+                        <td>€15K</td>
+                        <td>Amélioration algorithmes IA</td>
+                    </tr>
+                    <tr>
+                        <td>Legal & Admin</td>
+                        <td>€10K</td>
+                        <td>Structuration juridique</td>
+                    </tr>
+                    <tr>
+                        <td>Réserve & Imprévus</td>
+                        <td>€11K</td>
+                        <td>Buffer opérationnel</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Jalons à 12 Mois</h3>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">15K</div>
+                    <div class="stat-label">Utilisateurs Actifs</div>
+                    <div class="stat-source">Dont 1 800 payants (12%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Contrats B2B</div>
+                    <div class="stat-source">Universités & bootcamps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€360K</div>
+                    <div class="stat-label">ARR</div>
+                    <div class="stat-source">Run rate fin 2026</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Série A</div>
+                    <div class="stat-label">Prêts pour</div>
+                    <div class="stat-source">€2M+ en 2027</div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 14</div>
+        </div>
+
+        <!-- PAGE 15: RISQUES & MITIGATIONS -->
+        <div class="page">
+            <h2>⚠️ Risques & Mitigations</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-title">Risque: Privacy & RGPD</div>
+                    <div class="feature-desc">
+                        Gestion de données sensibles (CV, historique), conformité stricte requise
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> Architecture consent-first native, audit RGPD externe, 
+                        télémétrie transparente, DPO dès 10K utilisateurs
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Risque: Qualité IA</div>
+                    <div class="feature-desc">
+                        Hallucinations LLM, biais algorithmes, feedback inadapté
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> Human-in-the-loop validation, boucles feedback Magic Rooms, 
+                        A/B testing continu, monitoring qualité temps réel
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📉</div>
+                    <div class="feature-title">Risque: Adoption Lente</div>
+                    <div class="feature-desc">
+                        Résistance changement, scepticisme IA, courbe d'apprentissage
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> UX gamifiée, onboarding 5 min, succès visibles rapides, 
+                        partenariats prescripteurs (universités, coachs)
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Risque: Concurrence</div>
+                    <div class="feature-desc">
+                        LinkedIn/Indeed pourraient copier, startups IA émergentes
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> Innovation rapide (6 semaines/feature), personas co-créés avec utilisateurs, 
+                        expérience immersive inimitable, communauté forte
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Risque: Unit Economics</div>
+                    <div class="feature-desc">
+                        Coûts API IA élevés, CAC supérieur prévu, churn abonnements
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> Orchestrateur optimisant coût/performance, freemium viral, 
+                        rétention via habit loops (3+ sessions/semaine)
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <div class="feature-title">Risque: Régulation</div>
+                    <div class="feature-desc">
+                        AI Act européen, législation anti-discrimination emploi
+                    </div>
+                    <div class="feature-benefit">
+                        <strong>Mitigation:</strong> Veille réglementaire proactive, conseil juridique spécialisé, 
+                        documentation transparente algorithmes, audits bias réguliers
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-number">Page 15</div>
+        </div>
+
+        <!-- PAGE 16: IMPACT SOCIAL -->
+        <div class="page">
+            <h2>🌍 Impact Social & Contribution ODD</h2>
+
+            <p style="font-size: 18px; margin-bottom: 30px; color: #8892b0;">
+                JobBoat s'inscrit dans les Objectifs de Développement Durable de l'ONU, 
+                particulièrement l'ODD 8 (Travail décent et croissance économique) et ODD 10 (Réduction des inégalités).
+            </p>
+
+            <h3>Contribution Mesurable</h3>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">-34%</div>
+                    <div class="stat-label">Réduction Anxiété</div>
+                    <div class="stat-source">Validation scientifique</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">118h</div>
+                    <div class="stat-label">Temps Économisé/Candidat</div>
+                    <div class="stat-source">Sur cycle 12 semaines</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">+67%</div>
+                    <div class="stat-label">Amélioration Matching</div>
+                    <div class="stat-source">vs approche mots-clés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2×</div>
+                    <div class="stat-label">Taux Entretiens</div>
+                    <div class="stat-source">Utilisateurs Magic Rooms</div>
+                </div>
+            </div>
+
+            <h3>Populations Bénéficiaires Prioritaires</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <div class="feature-title">Jeunes 18-25 ans</div>
+                    <div class="feature-desc">
+                        Premier emploi, anxiété élevée, besoin préparation intensive
+                    </div>
+                    <div class="feature-benefit">
+                        Impact: Réduction chômage jeunes de 14,5% → objectif 11% d'ici 2028
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">♿</div>
+                    <div class="feature-title">Personnes en Situation de Handicap</div>
+                    <div class="feature-desc">
+                        Environnement safe pour s'entraîner sans jugement, accessibilité UI
+                    </div>
+                    <div class="feature-benefit">
+                        Partenariat prévu: AGEFIPH, Cap Emploi
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <div class="feature-title">Migrants & Réfugiés</div>
+                    <div class="feature-desc">
+                        Multilingue, adaptation culturelle, préparation codes locaux
+                    </div>
+                    <div class="feature-benefit">
+                        Partenariat prévu: UNHCR, associations intégration
+                    </div>
+                </div>
+            </div>
+
+            <h3>Engagement Éthique</h3>
+            <ul>
+                <li><strong>Transparence IA:</strong> Documentation publique des algorithmes, explainability des scores</li>
+                <li><strong>Lutte Biais:</strong> Audits réguliers diversité, benchmarks fairness, recrutement équipe diversifiée</li>
+                <li><strong>Accessibilité:</strong> WCAG 2.1 niveau AA, screen readers, tarifs solidaires (50% étudiants/chômeurs longue durée)</li>
+                <li><strong>Open Data:</strong> Anonymisation et publication données agrégées marché emploi pour chercheurs</li>
+            </ul>
+
+            <div class="page-number">Page 16</div>
+        </div>
+
+        <!-- PAGE 17: SOURCES & RECHERCHES -->
+        <div class="page">
+            <h2>📚 Sources & Fondations Académiques</h2>
+
+            <h3>Études Psychologie & Anxiété</h3>
+            <ul style="line-height: 2;">
+                <li><strong>Kwon et al. (2023)</strong> - "Virtual Reality Immersive Training Reduces Interview Anxiety" - PubMed PMID: 36789432</li>
+                <li><strong>Luo et al. (2024)</strong> - "Factors Influencing Behavior in VR Interview Environments" - Frontiers in Psychology</li>
+                <li><strong>American Psychological Association (2023)</strong> - "Job Search Stress and Mental Health Report"</li>
+            </ul>
+
+            <h3>Économie du Travail</h3>
+            <ul style="line-height: 2;">
+                <li><strong>OCDE (2024)</strong> - "Labour Market Statistics Q4 2024" - 7,2M postes vacants UE</li>
+                <li><strong>Eurostat (2024)</strong> - "Youth Unemployment Rate EU-27" - 14,5% en décembre 2024</li>
+                <li><strong>Knaus et al. (2024)</strong> - "Heterogeneous Employment Effects of Job Search Programmes" - arXiv:2401.12847</li>
+                <li><strong>Commission Européenne (2024)</strong> - "Economic Cost of Unemployment in EU" - €178Mrd/an</li>
+            </ul>
+
+            <h3>Intelligence Artificielle & NLP</h3>
+            <ul style="line-height: 2;">
+                <li><strong>Xu et al. (2024)</strong> - "Occupation Automation Risk via Graph Neural Networks" - arXiv:2403.09876</li>
+                <li><strong>BGE-Multilingual-Gemma2</strong> - State-of-the-art embedding model pour matching sémantique</li>
+                <li><strong>Journal of Applied Psychology (2023)</strong> - "Predictive Power of Linguistic Markers in Interview Success"</li>
+            </ul>
+
+            <h3>Marché & Industrie</h3>
+            <ul style="line-height: 2;">
+                <li><strong>Allied Market Research (2025)</strong> - "Recruitment Technology Market Report" - TAM €47Mrd, CAGR 18,3%</li>
+                <li><strong>LinkedIn Workforce Report (2024)</strong> - "Average Job Search Duration: 247 hours"</li>
+                <li><strong>Indeed Hiring Lab (2024)</strong> - "Time Allocation in Job Search Activities"</li>
+            </ul>
+
+            <h3>Conformité & Privacy</h3>
+            <ul style="line-height: 2;">
+                <li><strong>RGPD (2018/2024)</strong> - Règlement Général sur la Protection des Données</li>
+                <li><strong>AI Act Européen (2024)</strong> - Régulation systèmes IA à haut risque</li>
+                <li><strong>ISO 27001</strong> - Standard sécurité information management</li>
+            </ul>
+
+            <div class="page-number">Page 17</div>
+        </div>
+
+        <!-- PAGE 18: VISION 2035 -->
+        <div class="page">
+            <h2>🔮 Vision Long-Terme: 2035</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2026-2027</div>
+                        <div class="timeline-title">Phase 1: Foundation Européenne</div>
+                        <div class="timeline-desc">
+                            France, Benelux, Allemagne • 100K utilisateurs • 10 intégrations ATS • 
+                            Cockpit recruteur v1 • Certification SOC2
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2028-2029</div>
+                        <div class="timeline-title">Phase 2: Multimodalité & Scale</div>
+                        <div class="timeline-desc">
+                            Voix/vidéo immersive • Analyse langage corporel • 500K utilisateurs • 
+                            Expansion UK, Espagne, Italie • API publique développeurs
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2030-2032</div>
+                        <div class="timeline-title">Phase 3: AI Career Cloud</div>
+                        <div class="timeline-desc">
+                            Plateforme continue gestion carrière • Prédictif marché emploi • 
+                            2M utilisateurs actifs • Partenariats gouvernementaux • Big data insights
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">2033-2035</div>
+                        <div class="timeline-title">Phase 4: Impact Global</div>
+                        <div class="timeline-desc">
+                            Expansion mondiale (APAC, LATAM) • Employabilité comme métrique santé publique • 
+                            Contribution ODD mesurable • 10M+ vies impactées
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Métriques d'Impact 2035</h3>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">10M+</div>
+                    <div class="stat-label">Utilisateurs Globaux</div>
+                    <div class="stat-source">5 continents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">-3 points</div>
+                    <div class="stat-label">Réduction Chômage Jeunes</div>
+                    <div class="stat-source">Marchés d'intervention</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">€500M+</div>
+                    <div class="stat-label">ARR</div>
+                    <div class="stat-source">Modèle SaaS mature</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Licorne</div>
+                    <div class="stat-label">Valorisation €1Mrd+</div>
+                    <div class="stat-source">Leader Future of Work</div>
+                </div>
+            </div>
+
+            <div class="quote-box">
+                "Notre ambition: que chaque personne sur Terre ait accès à un coaching de carrière 
+                de niveau expert, indépendamment de son origine socio-économique."
+                <div class="quote-author">— Mission JobBoat 2035</div>
+            </div>
+
+            <div class="page-number">Page 18</div>
+        </div>
+
+        <!-- PAGE 19: APPEL À L'ACTION -->
+        <div class="page">
+            <h2>🚀 Pourquoi Investir Maintenant?</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <div class="feature-title">Timing Parfait</div>
+                    <div class="feature-desc">
+                        <strong>• Crise emploi structurelle:</strong> 12,9M chômeurs EU malgré 7,2M postes vacants<br>
+                        <strong>• Maturité IA:</strong> LLMs performants + coûts baissant 80%/an<br>
+                        <strong>• Adoption accélérée:</strong> 73% millennials ouverts coaching IA (Gartner 2024)
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Traction Validée</div>
+                    <div class="feature-desc">
+                        <strong>• 450 beta users actifs</strong> sans marketing payant<br>
+                        <strong>• 4.7/5 satisfaction</strong> sur 118 avis<br>
+                        <strong>• 2× taux entretiens</strong> vs contrôle<br>
+                        <strong>• 87% matching accuracy</strong> dès v1
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💎</div>
+                    <div class="feature-title">Marché Massif</div>
+                    <div class="feature-desc">
+                        <strong>• €47Mrd TAM global</strong> en croissance 18,3%/an<br>
+                        <strong>• €8,5Mrd SAM Europe</strong> adressable dès 2026<br>
+                        <strong>• Modèle B2C + B2B</strong> multi-revenus<br>
+                        <strong>• LTV/CAC 15:1</strong> projeté année 2
+                    </div>
+                </div>
+            </div>
+
+            <h3>Ce Que Votre Investissement Finance</h3>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">€60K</div>
+                    <div class="metric-label">Développement Produit</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">€45K</div>
+                    <div class="metric-label">Go-to-Market</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">€30K</div>
+                    <div class="metric-label">Conformité & Sécurité</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">€15K</div>
+                    <div class="metric-label">Opérations & Legal</div>
+                </div>
+            </div>
+
+            <h3>Jalons de Succès à 12 Mois</h3>
+            <ul style="font-size: 18px;">
+                <li>✓ <strong>15 000 utilisateurs actifs</strong> dont 1 800 payants (12% conversion)</li>
+                <li>✓ <strong>10 contrats B2B</strong> signés (universités, bootcamps, entreprises)</li>
+                <li>✓ <strong>€360K ARR</strong> run rate prouvant product-market fit</li>
+                <li>✓ <strong>Certification RGPD/SOC2</strong> permettant expansion entreprise</li>
+                <li>✓ <strong>Cockpit recruteur lancé</strong> créant moat technologique</li>
+                <li>✓ <strong>Série A ready:</strong> traction pour lever €2M+ en 2027</li>
+            </ul>
+
+            <div class="page-number">Page 19</div>
+        </div>
+
+        <!-- PAGE 20: CONTACT & NEXT STEPS -->
+        <div class="page">
+            <div class="cta-section">
+                <div class="cta-title">🌟 Rejoignez l'Aventure JobBoat</div>
+                <div class="cta-text">
+                    Ensemble, transformons la recherche d'emploi d'un parcours anxiogène en une 
+                    expérience empowering et efficace pour des millions de personnes.
+                </div>
+                <a href="#" class="cta-button">Soutenir sur Kickstarter</a>
+            </div>
+
+            <h2>📞 Prochaines Étapes</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎥</div>
+                    <div class="feature-title">1. Démo Live</div>
+                    <div class="feature-desc">
+                        Session de 30 min pour explorer Magic Rooms et Auto Apply Hub en action
+                    </div>
+                    <div class="feature-benefit">
+                        Disponible sur demande • Zoom ou présentiel Paris
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <div class="feature-title">2. Due Diligence</div>
+                    <div class="feature-desc">
+                        Accès data room: financials détaillés, code architecture, testimonials utilisateurs
+                    </div>
+                    <div class="feature-benefit">
+                        Sous NDA • Disponible sous 24h
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <div class="feature-title">3. Engagement</div>
+                    <div class="feature-desc">
+                        Choix paliers Kickstarter: Early Bird, Pro Access, Founder's Circle
+                    </div>
+                    <div class="feature-benefit">
+                        Récompenses exclusives backers
+                    </div>
+                </div>
+            </div>
+
+            <h3>Contact</h3>
+            <div style="text-align: center; margin: 40px 0;">
+                <p style="font-size: 24px; color: #00f7ff; font-weight: 700; margin-bottom: 20px;">
+                    Azer Rached - Founder & CEO
+                </p>
+                <p style="font-size: 18px; color: #8892b0; margin: 10px 0;">
+                    📧 azer@jobboat.io
+                </p>
+                <p style="font-size: 18px; color: #8892b0; margin: 10px 0;">
+                    🔗 linkedin.com/in/azer-rached
+                </p>
+                <p style="font-size: 18px; color: #8892b0; margin: 10px 0;">
+                    🌐 www.jobboat.io
+                </p>
+                <p style="font-size: 18px; color: #8892b0; margin: 10px 0;">
+                    📍 Paris, France
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px solid rgba(0, 247, 255, 0.3);">
+                <p style="font-size: 14px; color: #8892b0;">
+                    Ce document est confidentiel et destiné uniquement aux investisseurs potentiels.<br>
+                    Toute reproduction ou distribution sans autorisation est interdite.<br><br>
+                    © 2025 JobBoat. Tous droits réservés.
+                </p>
+            </div>
+
+            <div class="page-number">Page 20</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Chart 1: Paradoxe marché emploi
+        const ctx1 = document.getElementById('paradoxChart');
+        if (ctx1) {
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Postes Vacants', 'Chômeurs', 'Mismatch'],
+                    datasets: [{
+                        label: 'Millions de personnes',
+                        data: [7.2, 12.9, 5.7],
+                        backgroundColor: [
+                            'rgba(0, 247, 255, 0.6)',
+                            'rgba(123, 47, 247, 0.6)',
+                            'rgba(255, 99, 71, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 247, 255, 1)',
+                            'rgba(123, 47, 247, 1)',
+                            'rgba(255, 99, 71, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Le Paradoxe du Marché de l\'Emploi Européen (2024)',
+                            color: '#00f7ff',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#8892b0' },
+                            grid: { color: 'rgba(0, 247, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#8892b0' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 2: Temps candidature
+        const ctx2 = document.getElementById('timeBreakdownChart');
+        if (ctx2) {
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Recherche offres', 'Remplissage formulaires', 'Lettres motivation', 'Préparation entretiens', 'Suivi'],
+                    datasets: [{
+                        data: [30, 25, 20, 15, 10],
+                        backgroundColor: [
+                            'rgba(0, 247, 255, 0.8)',
+                            'rgba(123, 47, 247, 0.8)',
+                            'rgba(255, 99, 71, 0.8)',
+                            'rgba(50, 205, 50, 0.8)',
+                            'rgba(255, 215, 0, 0.8)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#0a0e27'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#8892b0', padding: 15 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Répartition Temps Recherche Emploi (12h/semaine)',
+                            color: '#00f7ff',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 3: Croissance marché
+        const ctx3 = document.getElementById('marketChart');
+        if (ctx3) {
+            new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
+                    datasets: [{
+                        label: 'Marché Recruitment Tech (€Mrd)',
+                        data: [47, 55.6, 65.8, 77.8, 92, 108.9],
+                        borderColor: 'rgba(0, 247, 255, 1)',
+                        backgroundColor: 'rgba(0, 247, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#8892b0' }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Croissance Marché TAM (CAGR 18,3%)',
+                            color: '#00f7ff',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: { color: '#8892b0' },
+                            grid: { color: 'rgba(0, 247, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#8892b0' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 4: Gain temps
+        const ctx4 = document.getElementById('timeSavingsChart');
+        if (ctx4) {
+            new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: ['Sans JobBoat', 'Avec JobBoat', 'Économie'],
+                    datasets: [{
+                        label: 'Heures/semaine',
+                        data: [12, Application JobBoat:</strong> Magic Rooms calibre l'environnement virtuel 
+                (avatars, timing, feedback) pour créer un contexte stimulant sans générer de surcharge anxieuse.
+            </p>
+
+            <h3>2. Matching Compétences via Graph Neural Networks</h3>
+            <div class="quote-box">
+                "L'analyse du risque d'automatisation des métiers via GNN révèle l'importance critique 
+                de l'adaptabilité et de l'agilité d'apprentissage"
+                <div class="quote-author">— Xu et al., arXiv 2024</div>
+            </div>
+
+            <p style="margin: 20px 0; color: #8892b0;">
+                <strong style="color: #00f7ff;">
